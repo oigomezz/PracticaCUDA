@@ -1,0 +1,36 @@
+#!/bin/bash
+
+make
+
+echo "Practica 2 - Efecto Borroso con CUDA " > resultados.txt
+
+for f in 1 2 #Ejecutar 1 secuencial o 2 hilos
+do
+	for k in "720p.jpg" "1080p.jpg" "4k.jpg" #Imagenes
+	do
+		for j in 3 5 7 9 11 13 15 #Kernels
+		do
+			for i in 2 4 8 16 32 64 128 256 512 1024 2048 #Hilos
+			do
+				if [ "$k" = "720p.jpg" ]
+				then
+					echo "720p" >> resultados.txt
+				elif [ "$k" = "1080p.jpg" ]
+				then
+					echo "1080p" >> resultados.txt
+				elif [ "$k" = "4k.jpg" ]
+				then
+					echo "4K" >> resultados.txt
+				fi
+				if [ "$f" -eq 1 ]
+				then
+					echo "Ejecucion con hilos. imagen = $k, salida = salida.jpg, Kernel = $j.", Hilos = $i >> resultados.txt
+					(time ./blur-effect "$k" "salida.jpg" "$j" "$i") &>> resultados.txt
+				else
+					echo "Ejecucion secuencial. imagen = $k, salida = salida.jpg, Kernel = $j." >> resultados.txt
+					(time ./blur-effect "$k" "salida.jpg" "$j") &>> resultados.txt
+				fi
+			done
+		done
+	done
+done
